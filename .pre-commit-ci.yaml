@@ -1,0 +1,5 @@
+# Configuration for https://pre-commit.ci
+# Skip local hooks that require Lean/uv tooling - these run in GitHub Actions instead
+
+ci:
+  skip: [lean-build, pytest]
