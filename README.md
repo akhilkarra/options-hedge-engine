@@ -1,9 +1,9 @@
 # Options Hedge Engine
 
-[![Lean CI](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/lean.yml/badge.svg)](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/lean.yml)
-[![Python CI](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/python.yml/badge.svg)](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/python.yml)
-[![codecov](https://codecov.io/gh/akhilkarra/options-hedge-engine/branch/main/graph/badge.svg)](https://codecov.io/gh/akhilkarra/options-hedge-engine)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/akhilkarra/options-hedge-engine/main.svg)](https://results.pre-commit.ci/latest/github/akhilkarra/options-hedge-engine/main)
+[![Lean CI](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/lean.yml/badge.svg)](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/lean.yml)
+[![Python CI](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/python.yml/badge.svg)](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/python.yml)
+[![codecov](https://codecov.io/gh/eigenq-xyz/options-hedge-engine/branch/main/graph/badge.svg)](https://codecov.io/gh/eigenq-xyz/options-hedge-engine)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/eigenq-xyz/options-hedge-engine/main.svg)](https://results.pre-commit.ci/latest/github/eigenq-xyz/options-hedge-engine/main)
 
 Formally verified options portfolio backtesting and hedging engine combining Lean 4 theorem proving with Python numerical computing.
 

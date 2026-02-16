@@ -19,7 +19,7 @@ namespace OptionHedge
 
 /-- NAV equals cash plus sum of position values -/
 theorem navIdentity (p : Portfolio) :
-  calcNAV p = p.cash + sumPositionValues p.positions := by
+  p.calcNAV = p.cash + p.sumPositionValues := by
   rfl  -- True by definition
 
 /-! ## Domain Constraints -/
@@ -44,7 +44,7 @@ theorem cashUpdateCorrect (p : Portfolio) (t : Trade) :
 theorem selfFinancing (p : Portfolio) (t : Trade)
   (h : t.executionPrice = markPrice) :
   let p' := applyTrade p t
-  calcNAV p' = calcNAV p - t.fee
+  p'.calcNAV = p.calcNAV - t.fee
 
 theorem feeNonNegative (t : Trade) : t.fee ≥ 0
 -/

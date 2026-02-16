@@ -19,14 +19,14 @@ def Position.value (pos : Position) : Int :=
 
 /-- Calculate total value of all positions -/
 @[export sum_position_values]
-def sumPositionValues (positions : List Position) : Int :=
-  positions.foldl (fun acc pos => acc + pos.value) 0
+def Portfolio.sumPositionValues (P : Portfolio) : Int :=
+  P.positions.foldl (fun acc pos => acc + pos.value) 0
 
 /-- Calculate Net Asset Value (NAV) of portfolio
     NAV = cash + Σ(position values) -/
 @[export calc_nav]
-def calcNAV (p : Portfolio) : Int :=
-  p.cash + sumPositionValues p.positions
+def Portfolio.calcNAV (P : Portfolio) : Int :=
+  P.cash + P.sumPositionValues
 
 /-- Apply a single trade to portfolio (simplified for v0.1)
     Updates position quantity and deducts cash -/
