@@ -1,8 +1,8 @@
 /-
-  Accounting Functions
+  Accounting FFI Exports
 
-  Core portfolio accounting: NAV calculation, trade application, cash accrual.
-  These functions are intentionally simple in v0.1 and will be proven correct in v0.3-v0.4.
+  C-callable wrappers for the core accounting functions defined in Basic.lean.
+  All exported symbols use the `hedge_` prefix to avoid C namespace collisions.
 
   Numeric Convention: All Int values representing money use basis points
   (×10,000 for 4 decimal places). Example: $123.4567 = 1,234,567 basis points.
@@ -12,33 +12,29 @@ import OptionHedge.Basic
 
 namespace OptionHedge
 
-/-- Calculate the market value of a single position -/
-@[export position_value]
-def Position.value (pos : Position) : Int :=
-  pos.quantity * pos.markPrice
+/-- FFI: Calculate the market value of a single position -/
+@[export hedge_position_value]
+def positionValueFFI (pos : Position) : Int :=
+  pos.value
 
-/-- Calculate total value of all positions -/
-@[export sum_position_values]
-def sumPositionValues (positions : List Position) : Int :=
-  positions.foldl (fun acc pos => acc + pos.value) 0
+/-- FFI: Sum all position values in a portfolio -/
+@[export hedge_sum_position_values]
+def sumPositionValuesFFI (p : Portfolio) : Int :=
+  sumPositionValues p.positions
 
-/-- Calculate Net Asset Value (NAV) of portfolio
-    NAV = cash + Σ(position values) -/
-@[export calc_nav]
-def calcNAV (p : Portfolio) : Int :=
-  p.cash + sumPositionValues p.positions
+/-- FFI: Get the NAV of a portfolio (O(1) field access) -/
+@[export hedge_portfolio_nav]
+def calcNavFFI (p : Portfolio) : Int :=
+  p.nav
 
-/-- Apply a single trade to portfolio (simplified for v0.1)
-    Updates position quantity and deducts cash -/
-def applyTrade (p : Portfolio) (t : Trade) : Portfolio :=
-  sorry  -- Implementation in v0.4
+/-- FFI: Construct a portfolio from cash and positions -/
+@[export hedge_mk_portfolio]
+def mkPortfolioFFI (cash : Int) (positions : List Position) : Portfolio :=
+  Portfolio.mk' cash positions
 
-/-- Apply multiple trades sequentially -/
-def applyTrades (p : Portfolio) (trades : List Trade) : Portfolio :=
-  trades.foldl applyTrade p
-
-/-- Accrue interest on cash balance (simplified for v0.1) -/
-def accrueInterest (p : Portfolio) (rate : Int) : Portfolio :=
-  sorry  -- Implementation in v0.4
+/-- FFI: Look up a position by asset ID -/
+@[export hedge_get_position]
+def getPositionFFI (p : Portfolio) (id : AssetId) : Option Position :=
+  p.getPosition id
 
 end OptionHedge

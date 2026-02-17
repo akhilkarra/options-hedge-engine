@@ -19,8 +19,9 @@ This library provides:
 
 ## Main Components
 
-- `OptionHedge.Basic`: Core data structures
-- `OptionHedge.Numeric`: Exact decimal types (TODO: v0.2)
-- `OptionHedge.Accounting`: Portfolio operations (TODO: v0.3)
+- `OptionHedge.Basic`: Core types (`AssetId`, `Position`, `Portfolio` with NAV invariant)
+- `OptionHedge.Accounting`: FFI exports with `hedge_` prefix
+- `OptionHedge.Invariants`: Formal theorems (NAV identity, domain constraints)
+- `OptionHedge.Tests.UnitTests`: Concrete computation tests
 - `OptionHedge.Certificate`: JSON certificate parsing and verification (TODO: v0.6)
 -/

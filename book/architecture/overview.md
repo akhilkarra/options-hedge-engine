@@ -1,6 +1,6 @@
 # Architecture Overview
 
-**Last Updated**: 2026-01-18 (v0.1-scaffold)
+**Last Updated**: 2026-02-16 (v0.2-nav)
 
 ## Core Principle: No Code Duplication + Data Source Agnostic
 
@@ -272,30 +272,57 @@ theorem dataCertificateValid (cert : DataCertificate)
 
 ## Milestone Breakdown
 
-### v0.2-nav (Lean + FFI)
+### v0.2-nav (Lean + FFI) — IN PROGRESS
 - Setup Lake for Lean → C shared library compilation
 - Implement `calcNAV` in Lean with `@[export]`
 - Create Cython FFI bindings
 - Add FFI round-trip tests
 - Prove NAV identity theorem
 
-**Note**: Original v0.2-numeric milestone removed - numeric types simplified to raw Int with basis points convention.
-
 ### v0.3-trades (Lean + FFI)
-- Implement `applyTrade` in Lean with `@[export]`
-- Prove conservation theorems
-- **Python**: Cython binding to call `lean_apply_trade`
+- Define `Trade` type, implement `applyTrade` in Lean with `@[export]`
+- Prove conservation, cash-correctness, and self-financing theorems
+- Python: stub + Cython binding for `apply_trade`
 
-### v0.4-certs (Python only)
-- **Python**: Certificate schema (Pydantic)
-- **Python**: Certificate emission after ETL
+### v0.4-data (Python only)
+- WRDS OptionMetrics loader, FRED risk-free rate loader
+- Data validation pipeline
+- Synthetic test data generator (deterministic, for CI without WRDS)
 
-### v0.5-verifier (Lean only)
-- **Lean**: Parse JSON certificates (data-agnostic)
-- **Python**: Data sources, orchestration, visualization (flexible)
-- **No duplication**: Zero overlap in responsibilities
+### v0.5-certs (Python + Lean types)
+- Certificate schema (Pydantic models + Lean `Certificate` structure)
+- Certificate emission after ETL/trade steps
 
-### 4. Flexibility for Future Use Cases
+### v0.6-verifier (Lean + Python integration)
+- Lean JSON parser for certificates
+- Invariant verification pipeline (NAV, conservation, cash, self-financing)
+- End-to-end: Python emits cert → Lean verifies → pass/fail
+
+### v0.7-pricer (Python, DG400a validated)
+- Black-Scholes pricing, Greeks, implied vol solver, vol surface
+- Validated against DerivaGem (Hull & White) DG400a spreadsheets
+
+### v0.8-options (Lean + Python)
+- Option lifecycle: expiry/exercise, position rolls, mark-to-market
+- Lean proofs for settlement and cash conservation at expiry
+
+### v0.9-optimizer (Python + Lean specs)
+- LP/QP hedging with CVaR objective (cvxpy)
+- Rebalancing triggers, margin estimation
+- Lean formal specification of constraints
+
+### v0.10-backtest (Full integration)
+- End-to-end backtest loop wiring all components
+- NAV time series, PnL attribution, visualization
+
+### v0.11-release (v1.0)
+- Proof audit (zero `sorry`), CLI, JupyterBook docs, release
+
+---
+
+## Design Principles
+
+### Flexibility for Future Use Cases
 
 Accounting kernel works for multiple scenarios:
 - **Backtests**: Historical WRDS data (v0.10)
@@ -304,103 +331,50 @@ Accounting kernel works for multiple scenarios:
 - **Live trading**: Real-time market feeds (future)
 - **Research**: Custom data sources for academic studies
 
-All use the same proven-correct accounting kernel!
+All use the same proven-correct accounting kernel.
 
-### 5. Swappable Data Layer
+### Swappable Data Layer
 
 Can swap Python for another language without touching accounting:
 - **R** for statistical analysis + same Lean kernel
 - **Julia** for numerical computing + same Lean kernel
 - **JavaScript** for web interfaces + same Lean kernel
-data loading in Lean
-- Lean isn't designed for data wrangling
-- Would need complex FFI to access databases
-
-❌ **DON'T**: Hard-code data source assumptions in accounting kernel
-- Don't check "is this from WRDS?" in Lean
-- Kernel should be pure functions: `(state, prices) → new_state`
-
-❌ **DON'T**: Mix responsibilities
-- Certificate verification belongs in Lean (it's a proof)
-- Data loading belongs in Python (it's I/O)
-- Time-stepping loop belongs in Python (orchestration)
-
----
-
-## Questions & Answers
-
-**Q: Why not just write everything in Lean?**
-A: ETL requires database connectors, pandas-like operations, visualization. Python's ecosystem is unmatched for data engineering. Lean would require extensive FFI to existing C libraries.
-
-**Q: Why not just write everything in Python?**
-A: Can't formally verify Python code. Would have to trust accounting implementation. Defeats the whole point of formal verification.
-
-**Q: How does this support MCMC simulations?**
-A: Accounting kernel is pure functions - doesn't care if prices are historical or simulated. Just swap the data source (WRDS loader → MCMC simulator) and use the same kernel. Certificate verifier checks the same assumptions regardless of source.
-
-**Q: What about live trading with market feeds?**
-A: Same story! Replace batch data loader with streaming feed. Accounting kernel unchanged. This is exactly why we keep it data-source agnostic.
-
-**Q: What's the FFI overhead?**
-A: ~10-50ns per function call. For batch operations (e.g., applying 1000 trades), amortized cost is negligible. Profiled in v0.7.
-
-**Q: How are types converted across FFI?**
-A: Lean `Int` → C `lean_object*` → Cython wrapper → Python `int`. Strings, arrays require marshaling. See DEVELOPMENT.md for details.
-
-**Q: What if certificate verification fails?**
-A: Backtest/simulation halts. Certificate shows exactly which assumption was violated (e.g., "negative price detected"). Fix data pipeline
-- **Python**: Data wrangling, orchestration, visualization
-- **No duplication**: Zero overlap in responsibilities
-
-### 4. Flexibility
-
-Can swap Python for another language without touching accounting:
-- **R** for statistical analysis
-- **Julia** for numerical computing
-- **JavaScript** for web interfaces
-
-All would use the same Lean accounting kernel via FFI.
 
 ---
 
 ## Anti-Patterns (What NOT to Do)
 
-❌ **DON'T**: Implement accounting in Python
-- Defeats purpose of formal verification
-- Creates drift between Lean spec and Python impl
-
-❌ **DON'T**: Implement ETL in Lean
-- Lean isn't designed for data wrangling
-- Would need complex FFI to access databases
-
-❌ **DON'T**: Mix responsibilities
-- Certificate verification belongs in Lean (it's a proof)
-- Data loading belongs in Python (it's I/O)
+- **DON'T** implement accounting in Python (defeats formal verification)
+- **DON'T** implement ETL/data loading in Lean (wrong tool for the job)
+- **DON'T** hard-code data source assumptions in the kernel (must stay agnostic)
+- **DON'T** mix responsibilities (certificates = Lean proof; data loading = Python I/O)
 
 ---
 
 ## Questions & Answers
 
 **Q: Why not just write everything in Lean?**
-A: ETL requires database connectors, pandas-like operations, visualization. Python's ecosystem is unmatched for data engineering. Lean would require extensive FFI to existing C libraries.
+A: ETL requires database connectors, pandas-like operations, visualization. Python's ecosystem is unmatched for data engineering.
 
 **Q: Why not just write everything in Python?**
 A: Can't formally verify Python code. Would have to trust accounting implementation. Defeats the whole point of formal verification.
 
+**Q: How does this support MCMC simulations?**
+A: Accounting kernel is pure functions — doesn't care if prices are historical or simulated. Just swap the data source and use the same kernel. Certificate verifier checks the same assumptions regardless of source.
+
 **Q: What's the FFI overhead?**
-A: ~10-50ns per function call. For batch operations (e.g., applying 1000 trades), amortized cost is negligible. Profiled in v0.7.
+A: ~10-50ns per function call. For batch operations (e.g., applying 1000 trades), amortized cost is negligible.
 
 **Q: How are types converted across FFI?**
 A: Lean `Int` → C `lean_object*` → Cython wrapper → Python `int`. Strings, arrays require marshaling. See DEVELOPMENT.md for details.
 
 **Q: What if certificate verification fails?**
-A: Backtest halts. Certificate shows exactly which assumption was violated (e.g., "negative price detected"). Fix Python ETL and rerun.
+A: Backtest halts. Certificate shows exactly which assumption was violated (e.g., "negative price detected"). Fix the data pipeline and rerun.
 
 ---
 
 ## Further Reading
 
-- [DECISIONS.md](../DECISIONS.md) - ADR-000 (Architecture), ADR-001 (Numeric Types)
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - FFI implementation details
+- [DECISIONS.md](../../DECISIONS.md) - ADR-000 (Architecture), ADR-001 (Numeric Types)
+- [DEVELOPMENT.md](../../DEVELOPMENT.md) - FFI implementation details
 - [Lean 4 FFI Examples](https://github.com/leanprover/lean4/tree/master/tests/lake/examples/ffi)
-- [book/architecture/ffi_guide.md](../book/architecture/ffi_guide.md) - Step-by-step FFI tutorial (v0.3+)

@@ -27,6 +27,10 @@ Users assume all responsibility and risk for the use of this software. The autho
 
 This is research-grade software under active development. It may contain bugs, incomplete features, and unverified assumptions. The presence of formal verification does NOT guarantee correctness for real-world trading.
 
+## Academic Integrity
+
+This repository is publicly available for learning and reference. If you are a student, **submitting any part of this code as your own work in academic coursework constitutes plagiarism** under most institutions' academic integrity policies. This applies to homework, projects, theses, and any other graded assignments. Instructors are welcome to use this project as a teaching reference or case study with proper attribution.
+
 ## Questions?
 
 If you have questions about appropriate use cases, please open a GitHub issue for discussion.
