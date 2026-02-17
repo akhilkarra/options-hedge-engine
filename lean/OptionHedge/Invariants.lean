@@ -2,12 +2,11 @@
   Formal Invariants
 
   Theorem statements for all portfolio accounting invariants.
-  Proofs will be implemented incrementally (v0.3-v0.13).
+  Proofs are implemented alongside each milestone (not deferred).
 
-  Using `sorry` as placeholders for now - this is expected in v0.1.
-
-  NOTE: Many theorems reference types not yet defined (Trade, etc.).
-  These will be uncommented as types are added in v0.2-v0.4.
+  With NAV as a stored field carrying a type-level proof (`nav_valid`),
+  the NAV identity is enforced by construction. Any function that returns
+  a Portfolio must produce a valid proof, guaranteeing NAV correctness.
 -/
 
 import OptionHedge.Basic
@@ -17,21 +16,41 @@ namespace OptionHedge
 
 /-! ## NAV Identity -/
 
-/-- NAV equals cash plus sum of position values -/
+/-- NAV equals cash plus sum of position values.
+With NAV as a stored field, this is just the proof field itself. -/
 theorem navIdentity (p : Portfolio) :
-  p.calcNAV = p.cash + p.sumPositionValues := by
-  rfl  -- True by definition
+    p.nav = p.cash + sumPositionValues p.positions :=
+  p.nav_valid
+
+/-- The smart constructor computes NAV correctly -/
+theorem mk'_nav (cash : Int) (positions : List Position) :
+    (Portfolio.mk' cash positions).nav = cash + sumPositionValues positions :=
+  rfl
+
+/-- An empty portfolio's NAV equals its cash -/
+theorem empty_nav (cash : Int) :
+    (Portfolio.empty cash).nav = cash := by
+  simp [Portfolio.empty, Portfolio.mk', sumPositionValues, List.foldl]
+
+/-- Position value is quantity times mark price -/
+theorem position_value_def (pos : Position) :
+    pos.value = pos.quantity * pos.markPrice :=
+  rfl
 
 /-! ## Domain Constraints -/
 
-/-- Mark prices must be positive -/
+/-- Mark prices must be positive.
+NOTE: Axiom for now; will be enforced at the certificate validation
+boundary (v0.6) rather than in the type system, because positions
+arrive from external data and the kernel is data-source agnostic. -/
 axiom pricesPositive (pos : Position) : pos.markPrice > 0
-  -- Note: Axiom for now, will enforce in certificate validation
 
 /-
-## Future Theorems (v0.4+)
+## Future Theorems (v0.3+)
 
-The following theorems will be uncommented when Trade type is defined:
+When Trade type is defined, the following will be proved.
+Critically, since applyTrade must return a Portfolio (which carries
+nav_valid), NAV correctness is enforced by the type system.
 
 theorem quantityConservation (p : Portfolio) (t : Trade) :
   let p' := applyTrade p t
@@ -44,7 +63,7 @@ theorem cashUpdateCorrect (p : Portfolio) (t : Trade) :
 theorem selfFinancing (p : Portfolio) (t : Trade)
   (h : t.executionPrice = markPrice) :
   let p' := applyTrade p t
-  p'.calcNAV = p.calcNAV - t.fee
+  p'.nav = p.nav - t.fee
 
 theorem feeNonNegative (t : Trade) : t.fee ≥ 0
 -/

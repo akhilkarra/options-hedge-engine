@@ -2,7 +2,7 @@
 """
 Cython FFI bindings to Lean 4 accounting kernel.
 
-Exposes calc_nav and other @[export] functions from Lean.
+Exposes @[export hedge_*] functions from OptionHedge.Accounting.
 """
 
 cdef extern from "lean/lean.h":
@@ -21,17 +21,21 @@ cdef extern from "lean/lean.h":
     lean_object* lean_int_to_int(lean_object*)
     int lean_is_scalar(lean_object*)
 
-# External declarations for our exported Lean functions
+# External declarations for Lean @[export hedge_*] functions
 cdef extern from *:
     """
-    // Forward declarations for Lean exports
-    extern lean_object* calc_nav(lean_object*);
-    extern lean_object* sum_position_values(lean_object*);
-    extern lean_object* position_value(lean_object*);
+    // Forward declarations for Lean exports (Accounting.lean)
+    extern lean_object* hedge_position_value(lean_object*);
+    extern lean_object* hedge_sum_position_values(lean_object*);
+    extern lean_object* hedge_portfolio_nav(lean_object*);
+    extern lean_object* hedge_mk_portfolio(lean_object*, lean_object*);
+    extern lean_object* hedge_get_position(lean_object*, lean_object*);
     """
-    lean_object* calc_nav(lean_object*)
-    lean_object* sum_position_values(lean_object*)
-    lean_object* position_value(lean_object*)
+    lean_object* hedge_position_value(lean_object*)
+    lean_object* hedge_sum_position_values(lean_object*)
+    lean_object* hedge_portfolio_nav(lean_object*)
+    lean_object* hedge_mk_portfolio(lean_object*, lean_object*)
+    lean_object* hedge_get_position(lean_object*, lean_object*)
 
 
 def initialize_lean():
@@ -40,8 +44,9 @@ def initialize_lean():
     lean_io_mark_end_initialization()
 
 
-# TODO: Implement actual Portfolio/Position marshalling in next iteration
-# For now, just stub to verify compilation works
-def calc_nav_stub():
-    """Stub function - full implementation requires Portfolio marshalling."""
-    return 0
+# TODO: Implement Portfolio/Position marshalling (Python dict <-> Lean object)
+# For now, stubs in __init__.py are used. Full implementation requires:
+# 1. Python dict -> Lean Position constructor (hedge_mk_position?)
+# 2. Python list[dict] -> Lean List Position
+# 3. Lean Int -> Python int extraction
+# 4. Lean Option Position -> Python dict | None

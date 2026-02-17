@@ -45,13 +45,14 @@ data/           — Encrypted market data (git-crypt)
 - **JSON certificates** carry data from Python to Lean's verifier with string-encoded decimals for precision.
 
 ### Lean types and functions (lean/OptionHedge/)
-- `Basic.lean` — core types: `Asset`, `Position`, `Portfolio`
-- `Accounting.lean` — `Position.value`, `Portfolio.sumPositionValues`, `Portfolio.calcNAV` (all `@[export]`-ed)
-- `Invariants.lean` — theorem statements (NAV identity, self-financing, conservation)
+- `Basic.lean` — core types: `AssetId` (String alias), `Position`, `Portfolio` (carries `nav_valid` proof that NAV = cash + positions). Smart constructor `Portfolio.mk'` discharges proof via `rfl`.
+- `Accounting.lean` — FFI exports only (`@[export hedge_*]`): `hedge_portfolio_nav` (O(1) field read), `hedge_mk_portfolio`, `hedge_position_value`, `hedge_sum_position_values`, `hedge_get_position`
+- `Invariants.lean` — formal theorems: `navIdentity`, `mk'_nav`, `empty_nav`, `position_value_def`, `pricesPositive` (axiom)
+- `Tests/UnitTests.lean` — concrete computation tests via `native_decide`
 
 ### Python package (python/src/hedge_engine/)
-- `ffi/lean_ffi.pyx` — Cython FFI declarations against Lean C headers
-- `ffi/__init__.py` — Python stub implementations (used until Cython extension is built)
+- `ffi/lean_ffi.pyx` — Cython FFI declarations against Lean C headers (`hedge_*` symbols)
+- `ffi/__init__.py` — Python stubs (used until Cython extension is built): `calc_nav`, `position_value`, `sum_position_values`, `get_position`, `initialize_lean`
 
 ## Key Conventions
 
