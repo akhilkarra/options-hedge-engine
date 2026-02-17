@@ -79,7 +79,7 @@ lean/
 ├── Makefile               # Lean-specific targets
 ├── OptionHedge/
 │   ├── Basic.lean         # Core types: Portfolio, Position, Asset
-│   ├── Numeric.lean       # Price, Decimal4 (scaled integers)
+│   ├── Lifecycle.lean     # Option expiry, exercise, rolls, mark-to-market
 │   ├── Accounting.lean    # calcNAV, applyTrade, accrueInterest
 │   ├── Invariants.lean    # Theorem statements (all invariants)
 │   ├── Proofs/            # Individual proofs for each invariant
@@ -190,25 +190,35 @@ python/
 ├── src/
 │   └── hedge_engine/
 │       ├── __init__.py
-│       ├── numeric.py     # Decimal types (mirrors Lean)
-│       ├── state.py       # Portfolio, Position dataclasses
-│       ├── accounting.py  # NAV, cash calculations
-│       ├── pricer/
-│       │   ├── __init__.py
-│       │   ├── black_scholes.py  # BS formula + Greeks
-│       │   └── hull_reference.py # DG validation helpers
-│       ├── optimizer/
-│       │   ├── __init__.py
-│       │   ├── lp_hedger.py      # scipy/cvxpy LP solver
-│       │   └── cvar.py           # CVaR optimization
-│       ├── etl/
-│       │   ├── __init__.py
-│       │   └── market_data.py    # Data loading/validation
-│       ├── certificate/
-│       │   ├── __init__.py
-│       │   ├── schema.py         # Pydantic models
-│       │   └── emitter.py        # Serialize to JSON
-│       └── cli.py                # Click-based CLI
+│       ├── ffi/               # Cython FFI to Lean kernel
+│       │   ├── __init__.py    # Python stubs (fallback)
+│       │   └── lean_ffi.pyx   # Cython declarations
+│       ├── etl/               # Data loading (v0.4)
+│       │   ├── wrds_loader.py
+│       │   ├── fred_loader.py
+│       │   ├── data_validator.py
+│       │   └── synthetic.py   # Synthetic test data
+│       ├── certificate/       # Certificate emission (v0.5)
+│       │   ├── schema.py      # Pydantic models
+│       │   └── emitter.py     # Serialize to JSON
+│       ├── pricer/            # BSM pricing (v0.7)
+│       │   ├── black_scholes.py
+│       │   ├── implied_vol.py
+│       │   └── vol_surface.py
+│       ├── lifecycle/         # Option lifecycle (v0.8)
+│       │   ├── expiry.py
+│       │   ├── roll.py
+│       │   └── mark_to_market.py
+│       ├── optimizer/         # LP/QP hedging (v0.9)
+│       │   ├── hedger.py      # cvxpy LP/QP solver
+│       │   ├── cvar.py        # CVaR computation
+│       │   ├── rebalance.py   # Rebalancing triggers
+│       │   └── margin.py      # Margin estimation
+│       ├── backtest/          # Backtest loop (v0.10)
+│       │   ├── engine.py
+│       │   ├── config.py
+│       │   └── results.py
+│       └── cli.py             # CLI entry point (v0.11)
 ├── tests/
 │   ├── conftest.py        # pytest fixtures
 │   ├── test_numeric.py    # Cross-validate with Lean
@@ -688,4 +698,4 @@ rprint(portfolio)  # Pretty-printed output
 
 ---
 
-**Last Updated**: 2026-01-18 (v0.1-scaffold)
+**Last Updated**: 2026-02-16 (v0.2-nav)

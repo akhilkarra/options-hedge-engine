@@ -1,9 +1,9 @@
 # Options Hedge Engine
 
-[![Lean CI](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/lean.yml/badge.svg)](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/lean.yml)
-[![Python CI](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/python.yml/badge.svg)](https://github.com/akhilkarra/options-hedge-engine/actions/workflows/python.yml)
-[![codecov](https://codecov.io/gh/akhilkarra/options-hedge-engine/branch/main/graph/badge.svg)](https://codecov.io/gh/akhilkarra/options-hedge-engine)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/akhilkarra/options-hedge-engine/main.svg)](https://results.pre-commit.ci/latest/github/akhilkarra/options-hedge-engine/main)
+[![Lean CI](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/lean.yml/badge.svg)](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/lean.yml)
+[![Python CI](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/python.yml/badge.svg)](https://github.com/eigenq-xyz/options-hedge-engine/actions/workflows/python.yml)
+[![codecov](https://codecov.io/gh/eigenq-xyz/options-hedge-engine/branch/main/graph/badge.svg)](https://codecov.io/gh/eigenq-xyz/options-hedge-engine)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/eigenq-xyz/options-hedge-engine/main.svg)](https://results.pre-commit.ci/latest/github/eigenq-xyz/options-hedge-engine/main)
 
 Formally verified options portfolio backtesting and hedging engine combining Lean 4 theorem proving with Python numerical computing.
 
@@ -70,33 +70,27 @@ option-hedge-engine/
 
 ## Development Milestones
 
-Progress tracked via git tags:
+Progress tracked via git tags. Proofs are distributed across milestones
+(each milestone proves its own invariants immediately).
 
-- [x] **v0.1-scaffold**: Build system and project structure
+- [x] **v0.1-scaffold**: Build system, project structure, CI, core Lean types
 - [ ] **v0.2-nav**: NAV calculation with FFI setup (Lean ↔ Python)
-- [ ] **v0.3-trades**: Trade application with proofs
-- [ ] **v0.4-certs**: Certificate emission
-- [ ] **v0.5-verifier**: Lean certificate verifier
-- [ ] **v0.6-integration**: End-to-end CI pipeline
-- [ ] **v0.7-pricer**: Black-Scholes implementation
-- [ ] **v0.8-optimizer**: LP hedging optimizer
-- [ ] **v0.9-data**: Market data integration (WRDS/FEDS)
-- [ ] **v0.10-backtest**: Full backtest execution
-- [ ] **v0.11-cvar**: CVaR optimization
-- [ ] **v0.12-proofs**: Complete formal proofs
-- [ ] **v0.13-docs**: Documentation deployment
-- [ ] **v0.14 (v1.0)**: Production-ready system
-
-**Note**: Original v0.2-numeric milestone removed after simplification (see commit history).
-
-See full milestone descriptions in the planning documentation.
+- [ ] **v0.3-trades**: Trade application (`Portfolio + Trade → Portfolio`) with conservation proofs
+- [ ] **v0.4-data**: Data pipeline (WRDS OptionMetrics, FRED, synthetic test data)
+- [ ] **v0.5-certs**: Certificate schema and emission (Python + Lean type definitions)
+- [ ] **v0.6-verifier**: Lean certificate parser and invariant verification pipeline
+- [ ] **v0.7-pricer**: Black-Scholes pricing, Greeks, implied vol, vol surface (DG400a validated)
+- [ ] **v0.8-options**: Options lifecycle (expiry/exercise, rolls, mark-to-market)
+- [ ] **v0.9-optimizer**: LP/QP hedging optimizer with CVaR objective + rebalancing
+- [ ] **v0.10-backtest**: Full end-to-end backtest execution
+- [ ] **v0.11-release (v1.0)**: Proof audit, CLI, JupyterBook documentation, release
 
 ## Documentation
 
 - **[DECISIONS.md](DECISIONS.md)**: Architectural decision records
 - **[RISKS.md](RISKS.md)**: Comprehensive risk register
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: Development workflow and guidelines
-- **JupyterBook** (coming in v0.14): `make docs-serve`
+- **JupyterBook** (coming in v0.11): `make docs-serve`
 
 ## Architecture
 
@@ -135,7 +129,7 @@ Apache 2.0 - See [LICENSE](LICENSE) for details.
 
 ## Status
 
-**Work in Progress** - Currently implementing v0.1-scaffold. This repository serves as a living record of the research and development process. All architectural decisions and risks are documented candidly for future reference and consultation.
+**Work in Progress** - Currently implementing v0.2-nav. This repository serves as a living record of the research and development process. All architectural decisions and risks are documented candidly for future reference and consultation.
 
 ---
 

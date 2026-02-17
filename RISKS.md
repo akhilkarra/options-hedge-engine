@@ -4,7 +4,7 @@
 
 **Last Updated**: 2026-01-18
 **Review Cadence**: Every milestone completion
-**Status**: Work in Progress (v0.1-scaffold)
+**Status**: Work in Progress (v0.2-nav)
 
 ---
 
@@ -56,7 +56,7 @@
 - **Property tests**: Hypothesis tests comparing Lean/Python accounting outputs
 - **Monorepo benefit**: Both in same repo, easier to keep in sync
 
-**Implementation**: v0.5-certs (schema), v0.7-integration (sync tests)
+**Implementation**: v0.5-certs (schema), v0.6-verifier (sync tests)
 
 **Monitoring**:
 - CI fails if schema version mismatch detected
@@ -112,7 +112,7 @@
 - **Proof**: Prove invariants hold within ε (e.g., `|NAV_calc - NAV_cert| < ε`)
 - **Test suite**: Include edge cases (very small/large numbers, near-zero differences)
 
-**Implementation**: v0.6-verifier (tolerance), v0.8-pricer (conversion)
+**Implementation**: v0.6-verifier (tolerance), v0.7-pricer (conversion)
 
 **Monitoring**:
 - Log all tolerance violations in certificates
@@ -140,7 +140,7 @@
 - **Expert consultation**: Budget time to ask on Lean Zulip or engage theorem-proving consultant
 - **Incremental approach**: Prove special cases first (e.g., single-asset portfolio), generalize later
 
-**Implementation**: v0.3-nav (simple), v0.13-proofs (complete)
+**Implementation**: v0.3-trades (simple), v0.11-release (final audit)
 
 **Monitoring**:
 - Track `axiom` count in CI
@@ -168,7 +168,7 @@
 - **Sampling**: For 10k-step backtests, verify every 10th step in dev (full verify in CI)
 - **Performance target**: <10ms per certificate (100 certs/sec)
 
-**Implementation**: v0.11-backtest (profiling), v0.15 (optimization)
+**Implementation**: v0.10-backtest (profiling and optimization)
 
 **Benchmark Plan** (v0.11):
 1. Measure baseline: single cert verification time
@@ -196,7 +196,7 @@
 - **Multiple references**: Compare to QuantLib, OptionMetrics formulas
 - **Tolerance**: Allow 1% difference from DG spreadsheets (document when exceeded)
 
-**Implementation**: v0.8-pricer
+**Implementation**: v0.7-pricer
 
 **Testing Strategy**:
 - Unit tests: Black-Scholes matches analytical solutions (ATM, ITM, OTM)
@@ -225,7 +225,7 @@
 - **Sampling in CI**: Verify every 100th cert for medium-sized tests
 - **Caching**: Cache Lean build artifacts (`~/.elan`, `build/`)
 
-**Implementation**: v0.7-integration
+**Implementation**: v0.6-verifier
 
 **CI Strategy**:
 - PR checks: Tiny fixture (fast feedback)
@@ -254,7 +254,7 @@
 - **Smaller datasets**: Use 20-step backtests in docs, not 1000-step
 - **Pre-execution**: For expensive notebooks, run `make docs-execute` locally before commit
 
-**Implementation**: v0.5-scaffold (config), v0.14-docs (notebooks)
+**Implementation**: v0.5-certs (config), v0.11-release (notebooks)
 
 **Workflow**:
 1. Develop notebook interactively
@@ -286,7 +286,7 @@
 - **Lockfile in git**: Commit `uv.lock`
 - **Regular updates**: `uv lock --upgrade` monthly (scheduled PR)
 
-**Implementation**: v0.1-scaffold (lockfile), v0.7-integration (CI matrix)
+**Implementation**: v0.1-scaffold (lockfile), v0.6-verifier (CI matrix)
 
 **Testing**:
 - CI runs on all platforms
@@ -349,7 +349,7 @@
 - **Access control**: Limit who can access GitHub Secrets (admin only)
 - **Rotation**: Rotate key if leaked (re-encrypt all data)
 
-**Implementation**: v0.1-scaffold (git-crypt config), v0.10-data (unlock)
+**Implementation**: v0.1-scaffold (git-crypt config), v0.4-data (unlock)
 
 **Operational Procedure**:
 1. New contributor requests access → secure key handoff
@@ -372,18 +372,18 @@
 
 | ID | Risk | Severity | Status | Milestone |
 |----|------|----------|--------|-----------|
-| R1 | Decimal precision | 🔴 Critical | ✅ Mitigated | v0.2-numeric |
-| R2 | Schema drift | 🟡 Medium | ✅ Mitigated | v0.7-integration |
+| R1 | Decimal precision | 🔴 Critical | ✅ Mitigated | v0.2-nav |
+| R2 | Schema drift | 🟡 Medium | ✅ Mitigated | v0.6-verifier |
 | R3 | JSON parsing | 🟡 Medium | ✅ Mitigated | v0.6-verifier |
-| R4 | Float tolerances | 🟡 Medium | ✅ Mitigated | v0.6, v0.8 |
-| R5 | Proof difficulty | 🟠 High | 🔄 Monitoring | v0.3, v0.13 |
-| R6 | Verification perf | 🟡 Medium | 🔄 Monitoring | v0.11, v0.15 |
-| R7 | DG mismatch | 🟢 Low | ✅ Accepted | v0.8-pricer |
-| R8 | CI timeout | 🟢 Low | ✅ Mitigated | v0.7-integration |
-| R9 | Docs timeout | 🟢 Low | ✅ Mitigated | v0.14-docs |
-| R10 | uv lock drift | 🟡 Medium | ✅ Mitigated | v0.1, v0.7 |
+| R4 | Float tolerances | 🟡 Medium | ✅ Mitigated | v0.6, v0.7 |
+| R5 | Proof difficulty | 🟠 High | 🔄 Monitoring | v0.3, v0.11 |
+| R6 | Verification perf | 🟡 Medium | 🔄 Monitoring | v0.10-backtest |
+| R7 | DG mismatch | 🟢 Low | ✅ Accepted | v0.7-pricer |
+| R8 | CI timeout | 🟢 Low | ✅ Mitigated | v0.6-verifier |
+| R9 | Docs timeout | 🟢 Low | ✅ Mitigated | v0.11-release |
+| R10 | uv lock drift | 🟡 Medium | ✅ Mitigated | v0.1, v0.6 |
 | R11 | Windows Make | 🟡 Medium | ✅ Mitigated | v0.1-scaffold |
-| R12 | Key leak | 🔴 Critical | ✅ Mitigated | v0.1, v0.10 |
+| R12 | Key leak | 🔴 Critical | ✅ Mitigated | v0.1, v0.4 |
 
 **Review Schedule**: Update after each milestone; full review before v1.0.
 

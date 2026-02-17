@@ -26,8 +26,8 @@ Welcome to the Options Hedge Engine project. This guide covers development setup
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/akhilkarra/option-hedge-engine.git
-cd option-hedge-engine
+git clone https://github.com/eigenq-xyz/options-hedge-engine.git
+cd options-hedge-engine
 
 # 2. Install all dependencies
 make setup
@@ -415,8 +415,8 @@ make ci-local
 
 ## Getting Help
 
-- **Questions**: Open a [Discussion](https://github.com/akhilkarra/option-hedge-engine/discussions)
-- **Bugs**: Open an [Issue](https://github.com/akhilkarra/option-hedge-engine/issues)
+- **Questions**: Open a [Discussion](https://github.com/eigenq-xyz/options-hedge-engine/discussions)
+- **Bugs**: Open an [Issue](https://github.com/eigenq-xyz/options-hedge-engine/issues)
 - **Lean help**: [Lean Zulip](https://leanprover.zulipchat.com/)
 - **Python help**: Check [DEVELOPMENT.md](DEVELOPMENT.md) for detailed technical info
 
